@@ -1,26 +1,36 @@
+// src/context/ThemeContext.tsx
 "use client";
 import React, { createContext, useContext, useState } from 'react';
 
-// Vos thèmes basés sur les morceaux de Dua Lipa
 export const THEMES = {
-  DEFAULT: { bg: 'bg-pop-pink', text: 'text-pop-yellow', accent: 'pop-blue' },
-  LEVITATING: { bg: 'bg-pop-blue', text: 'text-pop-pink', accent: 'pop-yellow' },
-  HOUDINI: { bg: 'bg-pop-yellow', text: 'text-pop-blue', accent: 'pop-pink' },
+  HOUDINI: {
+    primary: "bg-pop-blue",
+    secondary: "bg-pop-pink",
+    tertiary: "bg-pop-yellow",
+    textOnPrimary: "text-pop-yellow/30",
+    textOnSecondary: "text-pop-yellow/40",
+    textOnTertiary: "text-pop-pink/40",
+  },
+  TRAINING: {
+    primary: "bg-pop-pink",
+    secondary: "bg-pop-yellow",
+    tertiary: "bg-pop-blue",
+    textOnPrimary: "text-pop-blue/30",
+    textOnSecondary: "text-pop-blue/40",
+    textOnTertiary: "text-pop-pink/40",
+  }
 };
 
 const ThemeContext = createContext({
-  theme: THEMES.DEFAULT,
+  currentTheme: THEMES.HOUDINI,
   setTheme: (theme: any) => {},
 });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState(THEMES.DEFAULT);
-
+  const [currentTheme, setTheme] = useState(THEMES.HOUDINI);
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      <div className={`${theme.bg} ${theme.text} min-h-screen transition-colors duration-700`}>
-        {children}
-      </div>
+    <ThemeContext.Provider value={{ currentTheme, setTheme }}>
+      {children}
     </ThemeContext.Provider>
   );
 };

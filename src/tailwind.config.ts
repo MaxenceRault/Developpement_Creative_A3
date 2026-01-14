@@ -1,8 +1,14 @@
-import type { Config } from "tailwindcss";
+// tailwind.config.ts
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  // AJOUTE CECI :
+  safelist: [
+    'bg-pop-blue', 'bg-pop-pink', 'bg-pop-yellow',
+    'text-pop-blue/30', 'text-pop-pink/30', 'text-pop-yellow/30',
+    'text-pop-blue/40', 'text-pop-pink/40', 'text-pop-yellow/40',
+
   ],
   theme: {
     extend: {
@@ -11,12 +17,10 @@ const config: Config = {
         'pop-pink': '#FF1493',
         'pop-yellow': '#CCFF00',
         'pop-black': '#0a0a0a',
-      },
-      fontFamily: {
-        'retro': ['var(--font-retro)', 'sans-serif'],
+        'pop-green': '#32FF7E',
       },
     },
   },
-  plugins: [],
 };
+
 export default config;
