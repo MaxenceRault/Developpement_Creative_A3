@@ -1,27 +1,28 @@
 'use client';
 
-import React, { createContext, useContext, useState, useRef } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 interface AudioContextType {
   isPlaying: boolean;
   setIsPlaying: (playing: boolean) => void;
-  analyserRef: React.MutableRefObject<AnalyserNode | null>;
-  setAnalyser: (node: AnalyserNode) => void;
+  // On passe d'une Ref à un état réel pour déclencher la mise à jour
+  analyser: AnalyserNode | null; 
+  setAnalyser: (node: AnalyserNode | null) => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  const analyserRef = useRef<AnalyserNode | null>(null);
-
-  const setAnalyser = (node: AnalyserNode) => {
-    analyserRef.current = node;
-  };
+  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
 
   return (
-    <AudioContext.Provider value={{ isPlaying, setIsPlaying, analyserRef, setAnalyser }}>
+    <AudioContext.Provider value={{ 
+      isPlaying, 
+      setIsPlaying, 
+      analyser, // Maintenant c'est un état réactif
+      setAnalyser 
+    }}>
       {children}
     </AudioContext.Provider>
   );

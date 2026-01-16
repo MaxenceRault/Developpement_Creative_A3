@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useAudio } from "@/context/AudioContext";
 
 const GLYPHS_PATHS = {
     bolt: "M 40,10 L 30,50 L 50,50 L 40,90 L 70,40 L 50,40 L 60,10 Z",
@@ -12,35 +13,27 @@ const GLYPHS_PATHS = {
 
 const PALETTE = ["#00FFCC", "#FFFF00", "#FF00FF", "#FFFFFF", "#00CCFF", "#000000"];
 
-interface Atom {
-    path: Path2D;
-    x: number;
-    y: number;
-    s: number;
-    r: number;
-    f: string;
-}
-
 export default function GenerativePopCanvas() {
+    const { analyser, isPlaying, setIsPlaying } = useAudio() || {};
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isRunning, setIsRunning] = useState(false);
-    const isRunningRef = useRef(false);
     const [surface, setSurface] = useState("#FF0055");
-    const atomsRef = useRef<Atom[]>([]);
+    const [waveColor, setWaveColor] = useState("#CCFF00");
+    const [textColor, setTextColor] = useState("#FFFFFF"); // Nouvel état pour la couleur du titre
+    
+    const atomsRef = useRef<any[]>([]);
     const lastTick = useRef<number>(0);
-    const generationSpeed = 400;
-
+    const barCount = 30;
+    const lastWaveData = useRef<number[]>(new Array(barCount).fill(0));
     const paths = useRef<Record<string, Path2D>>({});
     
+    const generationSpeed = 400;
+
     useEffect(() => {
         Object.entries(GLYPHS_PATHS).forEach(([key, d]) => {
             paths.current[key] = new Path2D(d);
         });
     }, []);
-
-    useEffect(() => {
-        isRunningRef.current = isRunning;
-    }, [isRunning]);
 
     const createAtom = useCallback(() => {
         const keys = Object.keys(GLYPHS_PATHS);
@@ -61,9 +54,11 @@ export default function GenerativePopCanvas() {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
+        // 1. FOND
         ctx.fillStyle = surface;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        // 2. STICKERS
         atomsRef.current.forEach((atom) => {
             ctx.save();
             ctx.translate(atom.x, atom.y);
@@ -77,78 +72,158 @@ export default function GenerativePopCanvas() {
             ctx.stroke(atom.path);
             ctx.restore();
         });
-    }, [surface]);
 
-    const loop = useCallback((time: number) => {
-        if (!isRunningRef.current) return;
+        // 3. TEXTE DUA LIPA
+        ctx.save();
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = textColor; // Utilisation de la couleur choisie
+        ctx.lineWidth = 7;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.lineJoin = "round";
 
-        if (time - lastTick.current > generationSpeed) { 
-            atomsRef.current = [...atomsRef.current.slice(-25), createAtom()];
-            lastTick.current = time;
+        const textX = canvas.width / 2;
+        const textY = canvas.height / 2;
+
+        ctx.font = "900 70px sans-serif";
+        ctx.strokeText("DUA LIPA", textX, textY - 60);
+        ctx.fillText("DUA LIPA", textX, textY - 60);
+
+        ctx.font = "italic 900 30px sans-serif";
+        ctx.lineWidth = 4;
+        ctx.strokeText("RADICAL PESSIMIST", textX, textY + 40);
+        ctx.fillText("RADICAL PESSIMIST", textX, textY + 40);
+        ctx.restore();
+
+        // 4. ONDE SONORE (CAPSULES)
+        const gap = 6; 
+        const totalGapWidth = (barCount - 1) * gap;
+        const barWidth = (canvas.width - totalGapWidth) / barCount;
+
+        let dataArray = new Uint8Array(analyser ? analyser.frequencyBinCount : 0);
+        if (analyser && isPlaying) {
+            analyser.getByteFrequencyData(dataArray);
         }
-        
-        draw();
-        requestAnimationFrame(loop);
-    }, [createAtom, draw]);
+
+        ctx.fillStyle = waveColor;
+        for (let i = 0; i < barCount; i++) {
+            let val = 0;
+            if (isPlaying && analyser) {
+                val = (dataArray[i * 3 + 10] || 0) * 0.8; 
+                lastWaveData.current[i] = val; 
+            } else {
+                val = lastWaveData.current[i];
+            }
+
+            const barHeight = 6 + (val / 255) * 200;
+            const x = i * (barWidth + gap);
+            const y = canvas.height - barHeight;
+
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, barHeight, [barWidth / 2, barWidth / 2, 0, 0]);
+            ctx.fill();
+        }
+    }, [surface, waveColor, textColor, analyser, isPlaying]);
 
     useEffect(() => {
-        if (isRunning) {
-            requestAnimationFrame(loop);
-        }
-    }, [isRunning, loop]);
+        let animationId: number;
+        const loop = (time: number) => {
+            if (isRunning && time - lastTick.current > generationSpeed) {
+                const newAtom = createAtom();
+                atomsRef.current = [...atomsRef.current.slice(-20), newAtom];
+                lastTick.current = time;
+            }
+            draw();
+            animationId = requestAnimationFrame(loop);
+        };
+        animationId = requestAnimationFrame(loop);
+        return () => cancelAnimationFrame(animationId);
+    }, [isRunning, createAtom, draw]);
 
-    useEffect(() => { draw(); }, [draw]);
+    const handleToggleAudio = async () => {
+        if (!setIsPlaying) return;
+        if (!isPlaying && analyser?.context.state === 'suspended') {
+            await analyser.context.resume();
+        }
+        setIsPlaying(!isPlaying);
+    };
 
     return (
         <div className="min-h-screen bg-black flex flex-col md:flex-row items-center justify-center p-8 gap-10 font-black uppercase italic">
-            
-            <div className="relative shadow-2xl">
+            <div className="relative">
                 <canvas 
                     ref={canvasRef}
                     width={500}
                     height={500}
-                    className="border-2 border-white/10 bg-white cursor-pointer"
-                    onClick={() => setIsRunning(!isRunning)}
+                    className="border-8 border-white bg-white shadow-[0_0_60px_rgba(255,255,255,0.2)]"
                 />
-
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                    <h1 className="text-8xl md:text-[110px] text-center leading-[0.8] tracking-tighter"
-                            style={{ color: "#FFF", WebkitTextStroke: "3px black", filter: "drop-shadow(6px 6px 0px black)" }}>
-                        DUA<br/>LIPA
-                    </h1>
-                </div>
             </div>
 
-            <div className="w-72 bg-black border border-white/10 p-6 flex flex-col gap-8 text-white">
-                <div className="space-y-3">
-                    <button 
-                        onClick={() => setIsRunning(!isRunning)}
-                        className={`w-full py-4 border font-bold text-sm tracking-widest transition-all ${isRunning ? 'bg-white text-black border-white' : 'bg-transparent text-white border-white/20 hover:border-white'}`}
-                    >
-                        {isRunning ? "PAUSE" : "COMMENCER"}
+            <div className="w-80 bg-[#111] border-4 border-white p-6 flex flex-col gap-5 text-white shadow-[12px_12px_0px_0px_#CCFF00]">
+                {/* 1. GENERATEUR */}
+                <div className="space-y-2">
+                    <span className="text-[10px] tracking-widest text-white/40 font-sans">1. GENERATEUR</span>
+                    <button onClick={() => setIsRunning(!isRunning)}
+                        className={`w-full py-3 border-4 font-black text-xs tracking-widest transition-all ${isRunning ? 'bg-[#CCFF00] text-black border-black' : 'bg-transparent text-white border-white/20 hover:border-white'}`}>
+                        {isRunning ? "STOP STICKERS" : "START STICKERS"}
                     </button>
                 </div>
 
-                <div className="space-y-3">
-                    <span className="text-[10px] tracking-[0.3em] text-white/40 font-sans italic">COULEUR DE FOND</span>
-                    <div className="grid grid-cols-3 gap-2">
+                {/* 2. AUDIO */}
+                <div className="space-y-2">
+                    <span className="text-[10px] tracking-widest text-white/40 font-sans">2. AUDIO</span>
+                    <button onClick={handleToggleAudio}
+                        className={`w-full py-3 border-4 font-black text-xs tracking-widest transition-all ${isPlaying ? 'bg-[#FF00FF] text-white border-black' : 'bg-transparent text-white border-white/20 hover:border-white'}`}>
+                        {isPlaying ? "FREEZE AUDIO" : "PLAY & ANALYZE"}
+                    </button>
+                </div>
+
+                {/* 3. COULEUR FOND */}
+                <div className="space-y-2">
+                    <span className="text-[10px] tracking-widest text-white/40 font-sans">3. FOND</span>
+                    <div className="grid grid-cols-6 gap-1">
                         {["#FF0055", "#00CCFF", "#FFFF00", "#111", "#EEE", "#00FFCC"].map(c => (
-                            <button 
-                                key={c} 
-                                onClick={() => {setSurface(c); atomsRef.current = []; draw();}} 
-                                className={`h-8 border border-white/10 transition-transform ${surface === c ? 'scale-110 border-white' : 'hover:border-white/50'}`} 
-                                style={{ backgroundColor: c }}
-                            />
+                            <button key={c} onClick={() => {setSurface(c); atomsRef.current = [];}} 
+                                className={`h-8 border-2 ${surface === c ? 'border-white' : 'border-transparent'}`} 
+                                style={{ backgroundColor: c }} />
                         ))}
                     </div>
                 </div>
 
-                <button 
-                    onClick={() => {atomsRef.current = []; draw();}}
-                    className="w-full py-2 text-[9px] tracking-widest text-white/20 hover:text-white border-t border-white/5 pt-4 font-sans italic"
-                >
-                    RÉINITIALISER
-                </button>
+                {/* 4. COULEUR TEXTE (NOUVEAU) */}
+                <div className="space-y-2">
+                    <span className="text-[10px] tracking-widest text-white/40 font-sans">4. COULEUR TITRE</span>
+                    <div className="grid grid-cols-6 gap-1">
+                        {PALETTE.map(c => (
+                            <button key={c} onClick={() => setTextColor(c)} 
+                                className={`h-8 border-2 ${textColor === c ? 'border-white' : 'border-transparent'}`} 
+                                style={{ backgroundColor: c }} />
+                        ))}
+                    </div>
+                </div>
+
+                {/* 5. COULEUR ONDE */}
+                <div className="space-y-2">
+                    <span className="text-[10px] tracking-widest text-white/40 font-sans">5. COULEUR ONDE</span>
+                    <div className="grid grid-cols-6 gap-1">
+                        {PALETTE.map(c => (
+                            <button key={c} onClick={() => setWaveColor(c)} 
+                                className={`h-8 border-2 ${waveColor === c ? 'border-white' : 'border-transparent'}`} 
+                                style={{ backgroundColor: c }} />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
+                    <button onClick={() => {
+                        const link = document.createElement('a');
+                        link.download = `dua-lipa-cover.png`;
+                        link.href = canvasRef.current!.toDataURL();
+                        link.click();
+                    }} className="w-full py-4 bg-white text-black font-black text-xs hover:bg-[#CCFF00] transition-transform active:scale-95 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]">
+                        DOWNLOAD .PNG
+                    </button>
+                </div>
             </div>
         </div>
     );
