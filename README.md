@@ -34,8 +34,8 @@ Le projet s'appuie sur une esthétique **Retro-Pop propre à Dua Lipa** :
 ```bash
 npm install
 
-```bash
 npm run dev
+```
 
 Accède ensuite à : http://localhost:3000
 
