@@ -46,6 +46,8 @@ export default function Header() {
   const textDua3 = " DUA LIPA •";
   const textFuture = " FUTURE NOSTALGIA • HOUDINI • TRAINING SEASON • ILLUSION •";
 
+  const globalSpeed = { animationDuration: "50s" };
+
   return (
     <header
       className="relative h-screen w-full flex items-center justify-center bg-pop-turquoise overflow-hidden select-none transition-colors duration-700"
@@ -54,24 +56,24 @@ export default function Header() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none scale-150">
-        <div className={`h-80 ${currentTheme.primary} flex items-center overflow-hidden -rotate-6 w-[140vw] -mb-24 z-0 transition-colors duration-500`}>
-          <div className="animate-marquee whitespace-nowrap flex">
+        <div className={`h-80 ${currentTheme.primary} flex items-center overflow-hidden -rotate-6 w-[140vw] -mb-24 z-0 transition-colors duration-500 border-t-8 border-b-8 border-black`}>
+          <div className="animate-marquee whitespace-nowrap flex" style={globalSpeed}>
             <span className={`${currentTheme.textOnPrimary} font-black text-[12rem] italic uppercase leading-none`}>
-              {textDua3}{textDua3}{textDua3}{textDua3}{textDua3}
+              {textDua3}{textDua3}{textDua3}{textDua3}{textDua3}{textDua3}{textDua3}{textDua3}
             </span>
           </div>
         </div>
 
-        <div className={`h-80 ${currentTheme.secondary} flex items-center overflow-hidden rotate-3 w-[140vw] z-20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-colors duration-500`}>
-          <div className="animate-marquee-reverse whitespace-nowrap flex">
+        <div className={`h-80 ${currentTheme.secondary} flex items-center overflow-hidden rotate-3 w-[140vw] z-20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-colors duration-500 border-t-8 border-b-8 border-black`}>
+          <div className="animate-marquee-reverse whitespace-nowrap flex" style={globalSpeed}>
             <span className={`${currentTheme.textOnSecondary} font-black text-[12rem] italic uppercase leading-none`}>
-              {textFuture}{textFuture}
+              {textFuture}{textFuture}{textFuture}
             </span>
           </div>
         </div>
 
-        <div className={`h-80 ${currentTheme.tertiary} flex items-center overflow-hidden -rotate-2 w-[140vw] -mt-20 z-10 transition-colors duration-500`}>
-          <div className="animate-marquee whitespace-nowrap flex">
+        <div className={`h-80 ${currentTheme.tertiary} flex items-center overflow-hidden -rotate-2 w-[140vw] -mt-20 z-10 transition-colors duration-500 border-t-8 border-b-8 border-black`}>
+          <div className="animate-marquee whitespace-nowrap flex" style={globalSpeed}>
             <span className={`${currentTheme.textOnTertiary} font-black text-[12rem] italic uppercase leading-none`}>
               {textDua}{textDua}
             </span>
@@ -88,36 +90,30 @@ export default function Header() {
           className="relative w-96 h-96 md:w-[700px] md:h-[700px]"
         >
           <div
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center p-4 text-center"
             style={{ backfaceVisibility: "hidden" }}
+          >
+            <h2 
+              className="font-black italic text-8xl md:text-[11rem] uppercase leading-[0.7] tracking-tighter"
+              style={{ WebkitTextStroke: `5px white` }}
+            >
+              NEW<br />ALBUM<br />OUT<br />NOW
+            </h2>
+          </div>
+
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ transform: "rotateY(180deg)", backfaceVisibility: "hidden" }}
           >
             <div className="relative w-full h-full flex items-center justify-center">
               <Image
                 src="/images/Dualipa.png"
                 alt="Dua Lipa"
                 fill
-                className="object-contain scale-[2.5] drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
+                className="object-contain scale-[2.5]"
                 priority
               />
             </div>
-          </div>
-
-          <div
-            className="absolute inset-0 flex items-center justify-center p-4 text-center"
-            style={{
-              transform: "rotateY(180deg)",
-              backfaceVisibility: "hidden",
-            }}
-          >
-            <h2 
-              className="font-black italic text-8xl md:text-[11rem] uppercase leading-[0.7] tracking-tighter"
-              style={{ 
-                WebkitTextStroke: `5px white`,
-                filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.4))" 
-              }}
-            >
-              NEW<br />ALBUM<br />OUT<br />NOW
-            </h2>
           </div>
         </motion.div>
       </div>
@@ -126,24 +122,33 @@ export default function Header() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 10 }}
         transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-10 z-40 cursor-pointer"
+        className="absolute bottom-10 z-40 cursor-pointer scale-125"
         onClick={() => {
           const next = document.getElementById('tracklist-section');
           next?.scrollIntoView({ behavior: 'smooth' });
         }}
       >
         <svg 
-          width="60" 
-          height="30" 
-          viewBox="0 0 60 30" 
+          width="80" 
+          height="40" 
+          viewBox="-5 -5 70 40" 
           fill="none" 
-          stroke="white" 
-          strokeWidth="7" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-          className="opacity-100 drop-shadow-lg"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M5 5L30 25L55 5" />
+          <path 
+            d="M5 5L30 25L55 5" 
+            stroke="black" 
+            strokeWidth="14" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+          />
+          <path 
+            d="M5 5L30 25L55 5" 
+            stroke="white" 
+            strokeWidth="6" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+          />
         </svg>
       </motion.div>
 
