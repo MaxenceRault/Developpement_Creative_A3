@@ -1,10 +1,10 @@
-import Header from './components/Header';
+/*  */import CanvaCover from './components/CanvaCover';
 export default function Home() {
   return (
     <main className="flex flex-col">
-      <Header />      {/* La pièce qui tourne */}
+      {/* <Header />  */}     {/* La pièce qui tourne */}
       {/* <Tracklist />  */}  {/* Choix du son + modif couleurs */}
-      {/* <Generator />   */} {/* Le canvas Warhol */}
+      <CanvaCover />   {/* Le canvas Warhol */}
       {/* <Gallery /> */}     {/* Les deux lignes de covers */}
     </main>
   );
