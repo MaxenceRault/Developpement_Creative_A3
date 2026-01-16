@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// On importe tes deux contextes
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AudioProvider } from "@/context/AudioContext";
 

@@ -42,19 +42,19 @@ export default function Header() {
     lastTime.current = now;
   };
 
-  const textDua = " DUA LIPA • RADICAL OPTIMISM • DUA LIPA • RADICAL OPTIMISM •";
+  const textDua = " DUA LIPA • RADICAL PESSIMIST • DUA LIPA • RADICAL PESSIMIST •";
   const textDua3 = " DUA LIPA •";
   const textFuture = " FUTURE NOSTALGIA • HOUDINI • TRAINING SEASON • ILLUSION •";
 
   return (
     <header
       className="relative h-screen w-full flex items-center justify-center bg-pop-turquoise overflow-hidden select-none transition-colors duration-700"
-      onMouseMove={handleMouseMove}
+      onMouseMove={handleMouseMove} id="header-section"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none scale-150">
-        <div className={`h-64 ${currentTheme.primary} flex items-center overflow-hidden -rotate-6 w-[140vw] -mb-16 z-0 transition-colors duration-500`}>
+        <div className={`h-80 ${currentTheme.primary} flex items-center overflow-hidden -rotate-6 w-[140vw] -mb-24 z-0 transition-colors duration-500`}>
           <div className="animate-marquee whitespace-nowrap flex">
             <span className={`${currentTheme.textOnPrimary} font-black text-[12rem] italic uppercase leading-none`}>
               {textDua3}{textDua3}{textDua3}{textDua3}{textDua3}
@@ -62,7 +62,7 @@ export default function Header() {
           </div>
         </div>
 
-        <div className={`h-64 ${currentTheme.secondary} flex items-center overflow-hidden rotate-3 w-[140vw] z-20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-colors duration-500`}>
+        <div className={`h-80 ${currentTheme.secondary} flex items-center overflow-hidden rotate-3 w-[140vw] z-20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-colors duration-500`}>
           <div className="animate-marquee-reverse whitespace-nowrap flex">
             <span className={`${currentTheme.textOnSecondary} font-black text-[12rem] italic uppercase leading-none`}>
               {textFuture}{textFuture}
@@ -70,7 +70,7 @@ export default function Header() {
           </div>
         </div>
 
-        <div className={`h-64 ${currentTheme.tertiary} flex items-center overflow-hidden -rotate-2 w-[140vw] -mt-12 z-10 transition-colors duration-500`}>
+        <div className={`h-80 ${currentTheme.tertiary} flex items-center overflow-hidden -rotate-2 w-[140vw] -mt-20 z-10 transition-colors duration-500`}>
           <div className="animate-marquee whitespace-nowrap flex">
             <span className={`${currentTheme.textOnTertiary} font-black text-[12rem] italic uppercase leading-none`}>
               {textDua}{textDua}
@@ -127,7 +127,10 @@ export default function Header() {
         animate={{ opacity: 1, y: 10 }}
         transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
         className="absolute bottom-10 z-40 cursor-pointer"
-        onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+        onClick={() => {
+          const next = document.getElementById('tracklist-section');
+          next?.scrollIntoView({ behavior: 'smooth' });
+        }}
       >
         <svg 
           width="60" 

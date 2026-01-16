@@ -5,7 +5,6 @@ import React, { createContext, useContext, useState } from 'react';
 interface AudioContextType {
   isPlaying: boolean;
   setIsPlaying: (playing: boolean) => void;
-  // On passe d'une Ref à un état réel pour déclencher la mise à jour
   analyser: AnalyserNode | null; 
   setAnalyser: (node: AnalyserNode | null) => void;
 }
@@ -20,7 +19,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     <AudioContext.Provider value={{ 
       isPlaying, 
       setIsPlaying, 
-      analyser, // Maintenant c'est un état réactif
+      analyser,
       setAnalyser 
     }}>
       {children}
