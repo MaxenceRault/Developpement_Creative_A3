@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { motion } from "framer-motion";
 
 const GLYPHS_PATHS = {
     bolt: "M 40,10 L 30,50 L 50,50 L 40,90 L 70,40 L 50,40 L 60,10 Z",
@@ -31,6 +32,7 @@ export default function GenerativePopCanvas() {
     const generationSpeed = 400;
 
     const paths = useRef<Record<string, Path2D>>({});
+    const loopRef = useRef<(time: number) => void>();
     
     useEffect(() => {
         Object.entries(GLYPHS_PATHS).forEach(([key, d]) => {
@@ -88,19 +90,23 @@ export default function GenerativePopCanvas() {
         }
         
         draw();
-        requestAnimationFrame(loop);
+        requestAnimationFrame(loopRef.current!);
     }, [createAtom, draw]);
 
     useEffect(() => {
+        loopRef.current = loop;
+    }, [loop]);
+
+    useEffect(() => {
         if (isRunning) {
-            requestAnimationFrame(loop);
+            requestAnimationFrame(loopRef.current!);
         }
-    }, [isRunning, loop]);
+    }, [isRunning]);
 
     useEffect(() => { draw(); }, [draw]);
 
     return (
-        <div className="min-h-screen bg-black flex flex-col md:flex-row items-center justify-center p-8 gap-10 font-black uppercase italic">
+        <div className="min-h-screen bg-black flex flex-col md:flex-row items-center justify-center p-8 gap-10 font-black uppercase italic" id="cover-section">
             
             <div className="relative shadow-2xl">
                 <canvas 
@@ -150,6 +156,27 @@ export default function GenerativePopCanvas() {
                     RÉINITIALISER
                 </button>
             </div>
+            <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 10 }}
+        transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
+        className="absolute bottom-10 z-40 cursor-pointer"
+        onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+      >
+        <svg 
+          width="60" 
+          height="30" 
+          viewBox="0 0 60 30" 
+          fill="none" 
+          stroke="white" 
+          strokeWidth="7" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+          className="opacity-100 drop-shadow-lg"
+        >
+          <path d="M5 5L30 25L55 5" />
+        </svg>
+      </motion.div>
         </div>
     );
 }

@@ -48,13 +48,17 @@ export default function Header() {
 
   return (
     <header
-      className="relative h-screen w-full flex items-center justify-center bg-pop-turquoise overflow-hidden select-none transition-colors duration-700"
+      className="relative h-screen w-full flex items-center justify-center bg-black overflow-hidden select-none transition-colors duration-700"
       onMouseMove={handleMouseMove}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] pointer-events-none" />
+      {/* Overlay de grain subtil */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)] pointer-events-none z-10" />
 
-      <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none scale-150">
-        <div className={`h-64 ${currentTheme.primary} flex items-center overflow-hidden -rotate-6 w-[140vw] -mb-16 z-0 transition-colors duration-500`}>
+      {/* SECTION DES BANDES (MARQUEE) AGGRANDIES */}
+      <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none scale-110 md:scale-150">
+        
+        {/* Bande 1 - Agrandie à h-80 et chevauchement plus profond */}
+        <div className={`h-80 ${currentTheme.primary} flex items-center overflow-hidden -rotate-6 w-[150vw] -mb-24 z-0 transition-colors duration-500`}>
           <div className="animate-marquee whitespace-nowrap flex">
             <span className={`${currentTheme.textOnPrimary} font-black text-[12rem] italic uppercase leading-none`}>
               {textDua3}{textDua3}{textDua3}{textDua3}{textDua3}
@@ -62,7 +66,8 @@ export default function Header() {
           </div>
         </div>
 
-        <div className={`h-64 ${currentTheme.secondary} flex items-center overflow-hidden rotate-3 w-[140vw] z-20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-colors duration-500`}>
+        {/* Bande 2 - Milieu, shadow augmentée pour masquer les jonctions */}
+        <div className={`h-80 ${currentTheme.secondary} flex items-center overflow-hidden rotate-3 w-[150vw] z-20 shadow-[0_0_100px_rgba(0,0,0,0.5)] transition-colors duration-500`}>
           <div className="animate-marquee-reverse whitespace-nowrap flex">
             <span className={`${currentTheme.textOnSecondary} font-black text-[12rem] italic uppercase leading-none`}>
               {textFuture}{textFuture}
@@ -70,7 +75,8 @@ export default function Header() {
           </div>
         </div>
 
-        <div className={`h-64 ${currentTheme.tertiary} flex items-center overflow-hidden -rotate-2 w-[140vw] -mt-12 z-10 transition-colors duration-500`}>
+        {/* Bande 3 - Bas, remontée plus haut (-mt-24) pour sceller le fond */}
+        <div className={`h-80 ${currentTheme.tertiary} flex items-center overflow-hidden -rotate-2 w-[150vw] -mt-24 z-10 transition-colors duration-500`}>
           <div className="animate-marquee whitespace-nowrap flex">
             <span className={`${currentTheme.textOnTertiary} font-black text-[12rem] italic uppercase leading-none`}>
               {textDua}{textDua}
@@ -79,6 +85,7 @@ export default function Header() {
         </div>
       </div>
 
+      {/* PERSPECTIVE CARD */}
       <div className="relative z-30" style={{ perspective: "2500px" }}>
         <motion.div
           style={{
@@ -110,7 +117,7 @@ export default function Header() {
             }}
           >
             <h2 
-              className="font-black italic text-8xl md:text-[11rem] uppercase leading-[0.7] tracking-tighter"
+              className="font-black italic text-8xl md:text-[11rem] uppercase leading-[0.7] tracking-tighter text-white"
               style={{ 
                 WebkitTextStroke: `5px white`,
                 filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.4))" 
@@ -122,12 +129,16 @@ export default function Header() {
         </motion.div>
       </div>
 
+      {/* BOUTON SCROLL VERS TRACKLIST */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 10 }}
         transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-10 z-40 cursor-pointer"
-        onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+        className="absolute bottom-10 z-40 cursor-pointer left-1/2 -translate-x-1/2"
+        onClick={() => {
+            const next = document.getElementById('tracklist-section');
+            next?.scrollIntoView({ behavior: 'smooth' });
+        }}
       >
         <svg 
           width="60" 
@@ -135,16 +146,17 @@ export default function Header() {
           viewBox="0 0 60 30" 
           fill="none" 
           stroke="white" 
-          strokeWidth="7" 
+          strokeWidth="8" 
           strokeLinecap="round" 
           strokeLinejoin="round"
-          className="opacity-100 drop-shadow-lg"
+          className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
         >
+          <path d="M5 5L30 25L55 5" stroke="black" strokeWidth="12" className="opacity-30" />
           <path d="M5 5L30 25L55 5" />
         </svg>
       </motion.div>
 
-      <div className="absolute inset-0 pointer-events-none opacity-[0.08] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50" />
     </header>
   );
 }
