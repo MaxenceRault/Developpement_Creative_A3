@@ -30,7 +30,7 @@ Le projet s'appuie sur une esthétique **Retro-Pop propre à Dua Lipa** :
 
 ## 🚀 INSTALLATION & LANCEMENT
 
-### 1. Initialiser le projet
+### Initialiser le projet
 ```bash
 npm install
 
