@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useRef } from 'react';
 
-// On définit ce que notre Context contient
 interface AudioContextType {
   isPlaying: boolean;
   setIsPlaying: (playing: boolean) => void;
@@ -15,8 +14,6 @@ const AudioContext = createContext<AudioContextType | undefined>(undefined);
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   
-  // Le useRef est crucial ici car on ne veut pas déclencher un re-rendu 
-  // complet du site 60 fois par seconde quand les données audio changent.
   const analyserRef = useRef<AnalyserNode | null>(null);
 
   const setAnalyser = (node: AnalyserNode) => {
@@ -30,7 +27,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Le Hook personnalisé pour utiliser le contexte facilement
 export const useAudio = () => {
   const context = useContext(AudioContext);
   if (!context) {
