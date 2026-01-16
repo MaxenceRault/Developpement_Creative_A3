@@ -18,7 +18,7 @@ Footer: Galerie d'exemple de cover générée, permettant de contempler et s'ins
 ## 🖼️ MOODBOARD
 
 <p align="center">
-  <img src="./public/moodboard.png" alt="Moodboard Radical Pessimist" width="800">
+  <img src="./moodboard.png" alt="Moodboard Radical Pessimist" width="800">
 </p>
 
 Le projet s'appuie sur une esthétique **Retro-Pop propre à Dua Lipa** :
